@@ -28,7 +28,7 @@ class Arena extends React.Component {
         };
 
         this.process_feed = this.process_feed.bind(this);
-        this.handle_keys = this.handle_keys.bind(this);
+        this.handle_mouse = this.handle_mouse.bind(this);
     }
 
     componentDidMount() {
@@ -47,8 +47,6 @@ class Arena extends React.Component {
         this.gateway.feed(msg => {
             let data = JSON.parse(msg);
             let { code, payload } = data;
-
-            console.log(msg);
 
             switch (code) {
                 case 'ping':
@@ -86,39 +84,16 @@ class Arena extends React.Component {
         this.gateway.start();
     }
 
-    handle_keys(e, type) {
-        let key = e.which || e.keyCode;
-
-        let payload = {
-            pressed: type === 'down' ? 1 : 0
-        };
-
-        switch (key) {
-            case 87: // w
-                payload.dir = 'up';
-                break;
-            case 65: // a
-                payload.dir = 'left';
-                break;
-            case 83: // s
-                payload.dir = 'down';
-                break;
-            case 68: //
-                payload.dir = 'right';
-                break;
-            default:
-                return;
-        }
-
-        if (this.controls[payload.dir] === payload.pressed) {
-            return;
-        }
-
-        this.controls[payload.dir] = payload.pressed;
+    handle_mouse({ pageX: x, pageY: y }) {
+        x -= document.documentElement.clientWidth / 2;
+        y -= document.documentElement.clientHeight / 2;
+        const angle = Math.atan2(y, x);
 
         this.gateway.send({
             code: 'movement',
-            payload
+            payload: {
+                angle,
+            },
         });
     }
 
@@ -128,15 +103,14 @@ class Arena extends React.Component {
                 class="ma-arena"
                 ref="arena"
                 tabIndex={-1}
-                onKeyDown={() => this.handle_keys(event, 'down')}
-                onKeyUp={() => this.handle_keys(event, 'up')}>
+                onMouseMove={this.handle_mouse}>
 
                 <div class="ping">{this.state.ping}ms</div>
                 <div
                     class="field"
                     style={{
                         transform: `translate(${-this.state.field.x}px, ${-this.state.field.y}px)`,
-                        'will-change': 'transform',
+                        willChange: 'transform',
                     }}>
                     
                 </div>
