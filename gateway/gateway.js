@@ -32,14 +32,23 @@ set_interval(() => {
     for (let player in state.game1.players) {
         player = state.game1.players[player];
 
+        player.vel.x *= 0.9;
+        player.vel.y *= 0.9;
+
         if (player.input.up)
-            player.pos.y -= 12;
+            player.vel.y -= 1;
         if (player.input.down)
-            player.pos.y += 12;
+            player.vel.y += 1;
         if (player.input.left)
-            player.pos.x -= 12;
+            player.vel.x -= 1;
         if (player.input.right)
-            player.pos.x += 12;
+            player.vel.x += 1;
+
+        player.vel.x = clamp(player.vel.x, -12, 12);
+        player.vel.y = clamp(player.vel.y, -12, 12);
+
+        player.pos.x += player.vel.x;
+        player.pos.y += player.vel.y;
 
         player.pos.x = clamp(player.pos.x, 0, FIELD_MAX_WIDTH);
         player.pos.y = clamp(player.pos.y, 0, FIELD_MAX_HEIGHT);
@@ -71,7 +80,11 @@ wss.on('connection', socket => {
             left: 0,
             down: 0,
             right: 0,
-        }
+        },
+        vel: {
+            x: 0,
+            y: 0,
+        },
     };
 
     socket.send(JSON.stringify({
