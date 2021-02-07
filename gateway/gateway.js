@@ -148,13 +148,11 @@ set_interval(() => {
                 socket.has_pong = true;
 
                 const time_end = +new Date() - socket.ping_start;
-                const latency = Math.ceil(time_end) + 'ms';
+                const ping = Math.ceil(time_end);
 
                 socket.send(JSON.stringify({
                     code: CODE_PING,
-                    payload: {
-                        ping: latency
-                    }
+                    payload: { ping }
                 }));
             });
         }

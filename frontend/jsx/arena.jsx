@@ -17,7 +17,7 @@ class Arena extends React.Component {
         };
 
         this.state = {
-            ping: '0ms',
+            ping: 0,
             uuid: null,
             name: null,
             field: {
@@ -131,7 +131,7 @@ class Arena extends React.Component {
                 onKeyDown={() => this.handle_keys(event, 'down')}
                 onKeyUp={() => this.handle_keys(event, 'up')}>
 
-                <div class="ping">{this.state.ping}</div>
+                <div class="ping">{this.state.ping}ms</div>
                 <div class="player-local">
                     <div class="name">{this.props.name}</div>
                     <div class="points">0</div>
