@@ -132,17 +132,15 @@ class Arena extends React.Component {
                 onKeyUp={() => this.handle_keys(event, 'up')}>
 
                 <div class="ping">{this.state.ping}ms</div>
-                <div class="player-local">
-                    <div class="name">{this.props.name}</div>
-                    <div class="points">0</div>
-                </div>
                 <div
                     class="field"
                     style={{
                         transform: `translate(${-this.state.field.x}px, ${-this.state.field.y}px)`,
                         'will-change': 'transform',
                     }}>
-                    <div class="players">
+                    
+                </div>
+                <div class="players">
                         {Object.keys(this.state.players).map(key => {
                             let player = this.state.players[key];
 
@@ -155,8 +153,8 @@ class Arena extends React.Component {
                                     key={player.uuid}
                                     class="player-remote"
                                     style={{
-                                        top: `calc(${(player.pos.y / 4000) * 100}% - 40px)`,
-                                        left: `calc(${(player.pos.x / 4000) * 100}% - 40px)`,
+                                        top: `${player.pos.y - this.state.field.y + document.documentElement.clientHeight / 2 - 40}px`,
+                                        left: `${player.pos.x - this.state.field.x + document.documentElement.clientWidth / 2 - 40}px`,
                                     }}>
 
                                     <div class="name">{player.name}</div>
@@ -165,7 +163,10 @@ class Arena extends React.Component {
                             );
                         })}
                     </div>
-                </div>
+                    <div class="player-local">
+                        <div class="name">{this.props.name}</div>
+                        <div class="points">0</div>
+                    </div>
             </div>
         )
     }
