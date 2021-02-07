@@ -2,7 +2,7 @@ const ws = require('ws');
 const ioredis = require('ioredis');
 const uuid = require('uuid');
 
-let clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
 // config
 const FIELD_MAX_WIDTH = 4000;
@@ -73,10 +73,10 @@ wss.on('connection', socket => {
             y: 2000,
         },
         input: {
-            up: 0,
-            left: 0,
-            down: 0,
-            right: 0,
+            up: false,
+            left: false,
+            down: false,
+            right: false,
         },
         vel: {
             x: 0,
@@ -93,6 +93,7 @@ wss.on('connection', socket => {
 
     // process messages
     socket.on('message', message => {
+        console.log(message);
         try {
             message = JSON.parse(message);
 
@@ -100,12 +101,12 @@ wss.on('connection', socket => {
 
             switch (message.code) {
                 case 'movement':
-                    let { pressed, dir } = message.payload;
+                    const { pressed, dir } = message.payload;
 
-                    player.input[dir] = pressed;
+                    player.input[dir] = pressed === 1;
                     break;
                 case 'set_name':
-                    let { name } = message.payload;
+                    const { name } = message.payload;
 
                     player.name = name;
                     break;
@@ -146,8 +147,8 @@ set_interval(() => {
             socket.on('pong', () => {
                 socket.has_pong = true;
 
-                let time_end = +new Date() - socket.ping_start;
-                let latency = Math.ceil(time_end) + 'ms';
+                const time_end = +new Date() - socket.ping_start;
+                const latency = Math.ceil(time_end) + 'ms';
 
                 socket.send(JSON.stringify({
                     code: CODE_PING,
@@ -159,3 +160,4 @@ set_interval(() => {
         }
     });
 }, 2000);
+
