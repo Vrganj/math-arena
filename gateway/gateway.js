@@ -55,8 +55,17 @@ set_interval(() => {
     rpub.publish('game1', JSON.stringify({
         code: CODE_PLAYER_STATE,
         payload: {
-            players: state.game1.players
-        }
+            players: Object.fromEntries(Object.entries(state.game1.players).map(([key, { uuid, name, pos }]) => {
+                return[key, {
+                    uuid,
+                    name,
+                    pos: {
+                        x: Math.round(pos.x * 100) / 100,
+                        y: Math.round(pos.y * 100) / 100,
+                    },
+                }]
+            })),
+        },
     }));
 }, 50);
 
@@ -97,7 +106,7 @@ wss.on('connection', socket => {
         try {
             message = JSON.parse(message);
 
-            let player = state.game1.players[socket.uuid];
+            const player = state.game1.players[socket.uuid];
 
             switch (message.code) {
                 case 'movement':
@@ -139,7 +148,7 @@ set_interval(() => {
             return socket.terminate();
         }
 
-        socket.ping_start = +new Date();
+        socket.ping_start = new Date().get_time();
         socket.alive = false;
         socket.ping(() => {});
 
@@ -147,7 +156,7 @@ set_interval(() => {
             socket.on('pong', () => {
                 socket.has_pong = true;
 
-                const time_end = +new Date() - socket.ping_start;
+                const time_end = new Date().get_time() - socket.ping_start;
                 const ping = Math.ceil(time_end);
 
                 socket.send(JSON.stringify({
@@ -158,4 +167,3 @@ set_interval(() => {
         }
     });
 }, 2000);
-
