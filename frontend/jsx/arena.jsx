@@ -9,13 +9,6 @@ class Arena extends React.Component {
     constructor(props) {
         super(props);
 
-        this.controls = {
-            up: 0,
-            left: 0,
-            down: 0,
-            right: 0
-        };
-
         this.state = {
             ping: 0,
             uuid: null,
@@ -24,7 +17,8 @@ class Arena extends React.Component {
                 x: 2000,
                 y: 2000,
             },
-            players: {}
+            players: {},
+            problems: [],
         };
 
         this.process_feed = this.process_feed.bind(this);
@@ -78,6 +72,12 @@ class Arena extends React.Component {
                         players: payload.players
                     });
                     break;
+                case 'problem_state':
+                    this.setState({
+                        problems: payload.problems,
+                    });
+
+                    break;
             }
         });
 
@@ -105,42 +105,63 @@ class Arena extends React.Component {
                 tabIndex={-1}
                 onMouseMove={this.handle_mouse}>
 
-                <div class="ping">{this.state.ping}ms</div>
+                <div class="ping">
+                    {this.state.ping}ms
+                    <br />
+                    {this.state.field.x} 
+                    <br />
+                    {this.state.field.y}
+                </div>
                 <div
                     class="field"
                     style={{
                         transform: `translate(${-this.state.field.x}px, ${-this.state.field.y}px)`,
                         willChange: 'transform',
                     }}>
-                    
+                <div className="problems">
+                    {this.state.problems.map(problem => {
+                        return (
+                            <div
+                            key={problem.id}
+                            class="problem"
+                            style={{
+                                top: `${problem.pos.y}px`,
+                                left: `${problem.pos.x}px`,
+                            }}>
+                            </div>
+                        )
+                    })}
+                </div>
+
                 </div>
                 <div class="players">
-                        {Object.keys(this.state.players).map(key => {
-                            let player = this.state.players[key];
+                    {Object.keys(this.state.players).map(key => {
+                        let player = this.state.players[key];
 
-                            if (player.uuid === this.state.uuid) {
-                                return null;
-                            }
+                        if (player.uuid === this.state.uuid) {
+                            return null;
+                        }
 
-                            return (
-                                <div
-                                    key={player.uuid}
-                                    class="player-remote"
-                                    style={{
-                                        top: `${player.pos.y - this.state.field.y + document.documentElement.clientHeight / 2 - 40}px`,
-                                        left: `${player.pos.x - this.state.field.x + document.documentElement.clientWidth / 2 - 40}px`,
-                                    }}>
+                        return (
+                            <div
+                                key={player.uuid}
+                                class="player-remote"
+                                style={{
+                                    top: `${player.pos.y - this.state.field.y + document.documentElement.clientHeight / 2 - 40}px`,
+                                    left: `${player.pos.x - this.state.field.x + document.documentElement.clientWidth / 2 - 40}px`,
+                                }}>
 
-                                    <div class="name">{player.name}</div>
-                                    <div class="points">0</div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                    <div class="player-local">
-                        <div class="name">{this.props.name}</div>
-                        <div class="points">0</div>
-                    </div>
+                                <div class="name">{player.name}</div>
+                                <div class="points">0</div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                <div class="player-local">
+                    <div class="name">{this.props.name}</div>
+                    <div class="points">0</div>
+                </div>
             </div>
         )
     }

@@ -13,6 +13,8 @@ const CODE_PING = 'ping';
 const CODE_REGISTER = 'register';
 const CODE_PLAYER_STATE = 'player_state';
 
+const PLAYER_RADIUS = 40;
+
 // input codes
 const CODE_MOVEMENT = 'movement';
 const CODE_SET_NAME = 'set_name';
@@ -22,9 +24,24 @@ const rpub = new ioredis(6379, 'redis');
 
 const state = {
     game1: {
-        players: {}
+        players: {},
+        problems: [],
     }
 };
+
+// generate problems
+for (let i = 0; i < 30; ++i) {
+    const problem = {
+        description: 'foo(ck)',
+        pos: {
+            x: Math.floor(Math.random() * FIELD_MAX_WIDTH),
+            y: Math.floor(Math.random() * FIELD_MAX_HEIGHT),
+        },
+        id: i,
+    };
+
+    state.game1.problems.push(problem);
+}
 
 // handle game ticks, approx 20/sec
 set_interval(() => {
@@ -37,6 +54,13 @@ set_interval(() => {
 
         player.pos.x = clamp(player.pos.x, 0, FIELD_MAX_WIDTH);
         player.pos.y = clamp(player.pos.y, 0, FIELD_MAX_HEIGHT);
+
+        for (const problem of state.game1.problems) {
+            if (Math.sqrt((problem.pos.x - player.pos.x)**2 + (problem.pos.y - player.pos.y)**2) <= PLAYER_RADIUS) {
+                // player picked up problem
+                console.log('hit', problem.id);
+            }
+        }
     }
 
     // publish current player positions to all connected clients
@@ -76,12 +100,18 @@ wss.on('connection', socket => {
         code: CODE_REGISTER,
         payload: {
             uuid: socket.uuid
-        }
+        },
+    }));
+
+    socket.send(JSON.stringify({
+        code: 'problem_state',
+        payload: {
+            problems: state.game1.problems,
+        },
     }));
 
     // process messages
     socket.on('message', message => {
-        console.log(message);
         try {
             message = JSON.parse(message);
 
