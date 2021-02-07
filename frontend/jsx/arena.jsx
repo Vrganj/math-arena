@@ -140,6 +140,7 @@ class Arena extends React.Component {
                     class="field"
                     style={{
                         transform: `translate(${-this.state.field.x}px, ${-this.state.field.y}px)`,
+                        'will-change': 'transform',
                     }}>
                     <div class="players">
                         {Object.keys(this.state.players).map(key => {
