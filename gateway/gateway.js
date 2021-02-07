@@ -1,6 +1,6 @@
 const ws = require('ws');
 const ioredis = require('ioredis');
-const uuid = require('uuid');
+const { nanoid } = require('nanoid');
 
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
@@ -63,7 +63,7 @@ set_interval(() => {
 wss.on('connection', socket => {
     const rsub = new ioredis(6379, 'redis');
 
-    socket.uuid = uuid.v4().split('-')[0];
+    socket.uuid = nanoid(8);
 
     state.game1.players[socket.uuid] = {
         uuid: socket.uuid,
