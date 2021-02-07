@@ -36,16 +36,13 @@ set_interval(() => {
         player.vel.y *= 0.9;
 
         if (player.input.up)
-            player.vel.y -= 1;
+            player.vel.y = -12;
         if (player.input.down)
-            player.vel.y += 1;
+            player.vel.y = 12;
         if (player.input.left)
-            player.vel.x -= 1;
+            player.vel.x = -12;
         if (player.input.right)
-            player.vel.x += 1;
-
-        player.vel.x = clamp(player.vel.x, -12, 12);
-        player.vel.y = clamp(player.vel.y, -12, 12);
+            player.vel.x = 12;
 
         player.pos.x += player.vel.x;
         player.pos.y += player.vel.y;
