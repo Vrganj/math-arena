@@ -139,8 +139,7 @@ class Arena extends React.Component {
                 <div
                     class="field"
                     style={{
-                        top: `calc(50% - ${this.state.field.y}px)`,
-                        left: `calc(50% - ${this.state.field.x}px)`,
+                        transform: `translate(${-this.state.field.x}px, ${-this.state.field.y}px)`,
                     }}>
                     <div class="players">
                         {Object.keys(this.state.players).map(key => {
