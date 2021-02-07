@@ -69,10 +69,6 @@ wss.on('connection', socket => {
             x: 2000,
             y: 2000,
         },
-        vel: {
-            x: 0,
-            y: 0,
-        },
         angle: 0,
     };
 
